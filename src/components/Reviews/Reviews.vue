@@ -1,6 +1,6 @@
 <template>
-	<div>
-		<b-row class="mb-4 mt-3" v-for="(index,i) in 3" :key="i">
+	<div v-if="reviews.length>0">
+		<b-row class="mb-4 mt-3" v-for="review in reviews" :key="review._id">
 			<b-col class="mr-4" cols="1" offset-md="1">
 				<b-card no-body class="user-icon__container mt-3">
 					<b-card-text>
@@ -10,17 +10,33 @@
 			</b-col>
 			<b-col cols="9">
 				<b-card class="pt-4 pb-0 px-3 card-custom">
-					<b-card-title>Test</b-card-title>
-					<b-card-text>Test review</b-card-text>
+					<b-card-title>{{review.user.name}}</b-card-title>
+					<b-card-text>{{review.review}}</b-card-text>
 					<div class="d-flex w-100 justify-content-between mt-4">
-						<b-card-text>Ratings: 3</b-card-text>
-						<b-card-text>Created At: {{new Date().toLocaleDateString()}}</b-card-text>
+						<b-card-text>Ratings: {{review.ratings}}</b-card-text>
+						<b-card-text>
+							Created At: {{new Date(review.createdAt).toLocaleDateString()}}
+							<small>{{new Date(review.createdAt).toLocaleTimeString()}}</small>
+						</b-card-text>
 					</div>
 				</b-card>
 			</b-col>
 		</b-row>
 	</div>
+	<div class="text-center" v-else>
+		<h4>Currently there are no reviews.</h4>
+		<p>Be the first to review this article.</p>
+	</div>
 </template>
+
+<script>
+	import { mapState } from "vuex";
+	export default {
+		computed: {
+			...mapState(["reviews"])
+		}
+	};
+</script>
 
 <style scoped>
 	.user-icon__container {
@@ -33,7 +49,6 @@
 	}
 
 	.card-custom {
-		cursor: pointer;
 		color: #343a40;
 		transition: all 300ms;
 		box-shadow: 1px 2px 3px rgba(0.5, 0.5, 0.5, 0.5);
@@ -42,9 +57,7 @@
 		background: #7b8794;
 		color: #fff;
 	}
-	.card-custom:active {
-		transform: translateY(2px);
-	}
+
 	.card-custom:hover .star-icon {
 		color: #fff;
 	}

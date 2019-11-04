@@ -8,4 +8,8 @@ const articleInstance = axios.create({
 	baseURL: "http://localhost:5000/api/v1/articles"
 });
 
-export { userInstance, articleInstance };
+const reviewInstance = axios.create({
+	baseURL: "http://localhost:5000/api/v1/reviews"
+});
+
+export { userInstance, articleInstance, reviewInstance };

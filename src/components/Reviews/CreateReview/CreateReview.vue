@@ -40,8 +40,13 @@
 			setRatings(i) {
 				this.ratings = i + 1;
 			},
-			submitReview() {
-				console.log(this.ratings, this.review);
+			async submitReview() {
+				await this.$store.dispatch("addReview", {
+					ratings: this.ratings,
+					review: this.review
+				});
+				this.ratings = "";
+				this.review = "";
 			}
 		},
 		watch: {

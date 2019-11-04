@@ -28,17 +28,23 @@
 			<p class="text-center">Have fun!</p>
 			<b-nav align="center">
 				<b-nav-item>
-					<b-button to="/articles" active-class="active" exact variant="outline-secondary">Browse Articles</b-button>
+					<b-button
+						to="/articles"
+						active-class="active"
+						exact
+						variant="outline-secondary"
+					>Browse Articles</b-button>
 				</b-nav-item>
 				<b-nav-item>
-					<b-button to="/articles/createArticle" active-class="active" exact variant="outline-secondary">Create an Article</b-button>
+					<b-button
+						to="/articles/createArticle"
+						active-class="active"
+						exact
+						variant="outline-secondary"
+					>Create an Article</b-button>
 				</b-nav-item>
 			</b-nav>
 		</div>
-		<p
-			style="fontSize:14px; marginTop: 300px;"
-			class="text-center"
-		>A simple MEVN app with Bootstrap-vue and other vue features such as Vuex,VueRouter along with other backend technologies.</p>
 	</b-container>
 </template>
 
@@ -50,3 +56,9 @@
 		}
 	};
 </script>
+
+<style scoped>
+	.container-custom {
+		height: 90vh;
+	}
+</style>

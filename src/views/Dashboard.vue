@@ -94,9 +94,13 @@
 
 <style scoped>
 	a {
-		color: #495057;
+		color: #4c545e;
 	}
 	.nav-item a.active {
 		color: #007bff;
+	}
+	.card-header {
+		background: #a7b0b9;
+		border: none;
 	}
 </style>

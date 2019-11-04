@@ -3,15 +3,18 @@
 		<app-header />
 		<!-- <b-breadcrumb :items="items"></b-breadcrumb> -->
 		<router-view></router-view>
+		<app-footer></app-footer>
 	</div>
 </template>
 
 <script>
 	import Header from "./components/Header/Header";
+	import Footer from "./components/Footer/Footer";
 	export default {
 		name: "app",
 		components: {
-			"app-header": Header
+			"app-header": Header,
+			"app-footer": Footer
 		},
 		data() {
 			return {
@@ -36,4 +39,7 @@
 </script>
 
 <style>
+	body {
+		background: #abb6bdd5;
+	}
 </style>

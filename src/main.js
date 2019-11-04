@@ -6,6 +6,7 @@ import App from "./App.vue";
 import axios from "axios";
 import Vuelidate from "vuelidate";
 import feather from "vue-icon";
+import Vuebar from 'vuebar';
 
 import router from "./router";
 import store from "./store";
@@ -14,6 +15,7 @@ store.dispatch("autoLogin");
 
 Vue.use(feather, "v-icon");
 Vue.use(Vuelidate);
+Vue.use(Vuebar);
 axios.defaults.baseURL = "http://localhost:8000/api/v1/users";
 
 const reqInterceptor = axios.interceptors.request.use(req => {

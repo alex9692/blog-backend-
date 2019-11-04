@@ -91,8 +91,13 @@ const routes = [
 		props: true
 	},
 	{
-		path: '*',
-		component: () => import('./views/Error.vue')
+		path: "/verify-email/:token",
+		component: () => import("./views/VerifyAccountFinish.vue"),
+		props: true
+	},
+	{
+		path: "*",
+		component: () => import("./views/Error.vue")
 	}
 ];
 

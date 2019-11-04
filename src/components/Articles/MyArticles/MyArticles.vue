@@ -39,7 +39,6 @@
 		transition: color 300ms;
 		fill: #343a40;
 	}
-
 	.card-custom {
 		cursor: pointer;
 		color: #343a40;

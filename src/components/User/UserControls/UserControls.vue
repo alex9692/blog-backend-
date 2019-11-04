@@ -26,3 +26,9 @@
 		props: ["prop"]
 	};
 </script>
+
+<style scoped>
+	.test {
+		background: #272b2e;
+	}
+</style>

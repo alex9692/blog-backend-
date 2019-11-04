@@ -42,13 +42,20 @@
 	a {
 		color: #343a40;
 	}
+	a:hover {
+		background: #343a40;
+		border-radius: 5px;
+		border-top-left-radius: 0px;
+		border-top-right-radius: 0px;
+		color: #fff;
+		transition: all 300ms;
+	}
 	.active {
 		background: #343a40;
 		border-radius: 5px;
 		border-top-left-radius: 0px;
 		border-top-right-radius: 0px;
 		color: #fff;
-		cursor: pointer;
 		transition: all 300ms;
 	}
 	.active:hover {

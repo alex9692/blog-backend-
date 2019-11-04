@@ -1,9 +1,10 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { articleInstance, userInstance } from "./axios";
+import { articleInstance, userInstance, reviewInstance } from "./axios";
 import * as io from "socket.io-client";
 
 import router from "./router";
+import { async } from "q";
 
 const socket = io("http://localhost:5001");
 
@@ -21,7 +22,8 @@ export default new Vuex.Store({
 		article: null,
 		myArticles: [],
 		resetUserName: "",
-		reactivateAccount: false
+		reactivateAccount: false,
+		reviews: []
 	},
 	mutations: {
 		setTokenAndUserId: (state, payload) => {
@@ -87,6 +89,12 @@ export default new Vuex.Store({
 		},
 		reactivateYourAccount: (state, payload) => {
 			state.reactivateAccount = payload;
+		},
+		setReviews: (state, payload) => {
+			state.reviews = payload;
+		},
+		addNewReview: (state, payload) => {
+			state.reviews.push(payload);
 		}
 	},
 	actions: {
@@ -174,12 +182,11 @@ export default new Vuex.Store({
 				}
 			}
 		},
-		sendVertificationMail: async ({ dispatch, state }) => {
+		sendVertificationMail: async ({ state }) => {
 			try {
 				await userInstance.get("/verify-email", {
 					headers: { Authorization: `Bearer ${state.token}` }
 				});
-				dispatch("signout");
 			} catch (error) {
 				console.log(error.response);
 			}
@@ -349,6 +356,39 @@ export default new Vuex.Store({
 			} catch (error) {
 				state.loading = false;
 				router.push("/error");
+				console.log(error);
+			}
+		},
+		verifyAccountFinish: async ({ state }, payload) => {
+			try {
+				state.loading = true;
+				await userInstance.patch(`/verify-email/${payload}`);
+				state.loading = false;
+			} catch (error) {
+				state.loading = false;
+				router.push("/error");
+				console.log(error);
+			}
+		},
+		getReviews: async ({ commit, state }) => {
+			try {
+				const response = await articleInstance.get(
+					`/${state.selectedArticleId}/reviews`
+				);
+				commit("setReviews", response.data.data.reviews);
+			} catch (error) {
+				console.log(error);
+			}
+		},
+		addReview: async ({ commit, state }, payload) => {
+			try {
+				const response = await articleInstance.post(
+					`/${state.selectedArticleId}/reviews`,
+					payload,
+					{ headers: { Authorization: `Bearer ${state.token}` } }
+				);
+				commit("addNewReview", response.data.data.review);
+			} catch (error) {
 				console.log(error);
 			}
 		}
