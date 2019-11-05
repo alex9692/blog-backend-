@@ -17,7 +17,12 @@
 					<b-form-input id="phone" type="number" v-model="updatedPhoneNumber"></b-form-input>
 				</b-form-group>
 				<div class="text-center">
-					<b-button type="submit" variant="success" style="width: 60%;" :disabled="!allowSubmit">Submit</b-button>
+					<b-button type="submit" variant="success" style="width: 60%;" :disabled="!allowSubmit">
+						<span v-if="!loading">Submit</span>
+						<span v-else>
+							<b-spinner small label="Small Spinner" variant="light" class="mr-1"></b-spinner>Submitting...
+						</span>
+					</b-button>
 				</div>
 			</b-form>
 		</b-col>
@@ -25,6 +30,7 @@
 </template>
 
 <script>
+	import { mapState } from "vuex";
 	export default {
 		data() {
 			return {
@@ -36,6 +42,7 @@
 		},
 		props: ["user"],
 		computed: {
+			...mapState(["loading"]),
 			allowSubmit() {
 				const regexEmail = /\S+@\S+\.\S+/;
 				return (
@@ -61,7 +68,8 @@
 						this.updatedData[key] = formData[key];
 					}
 				});
-				this.$store.dispatch("updateUser", this.updatedData);
+				this.$store.dispatch("updateUser", { ...this.updatedData });
+				this.updatedData = {};
 			}
 		},
 		watch: {

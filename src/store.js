@@ -4,7 +4,6 @@ import { articleInstance, userInstance, reviewInstance } from "./axios";
 import * as io from "socket.io-client";
 
 import router from "./router";
-import { async } from "q";
 
 const socket = io("http://localhost:5001");
 
@@ -23,7 +22,9 @@ export default new Vuex.Store({
 		myArticles: [],
 		resetUserName: "",
 		reactivateAccount: false,
-		reviews: []
+		reviews: [],
+		error: false,
+		errMessage: {}
 	},
 	mutations: {
 		setTokenAndUserId: (state, payload) => {
@@ -95,10 +96,13 @@ export default new Vuex.Store({
 		},
 		addNewReview: (state, payload) => {
 			state.reviews.push(payload);
+		},
+		setError: (state, payload) => {
+			state.error = payload;
 		}
 	},
 	actions: {
-		signInUser: async ({ commit, dispatch }, payload) => {
+		signInUser: async ({ commit, dispatch, state }, payload) => {
 			commit("setLoading", true);
 			try {
 				const response = await userInstance.post("/signin", payload.formData);
@@ -111,23 +115,38 @@ export default new Vuex.Store({
 				dispatch("autoSignout");
 				router.push("/dashboard");
 			} catch (error) {
-				console.log(error.response);
+				state.error = true;
+				if (error.response.data.message.includes("email")) {
+					state.errMessage.msg = error.response.data.message;
+				}
 				if (error.response.data.message.includes("deactivate")) {
 					commit("reactivateYourAccount", true);
 				}
+				setTimeout(() => {
+					state.error = false;
+				}, 5000);
 				commit("setLoading", false);
 				commit("setAuth", false);
 			}
 		},
-		signUpUser: async ({ commit }, payload) => {
+		signUpUser: async ({ commit, state }, payload) => {
 			commit("setLoading", true);
 			try {
 				await userInstance.post("/signup", payload.formData);
 				commit("setLoading", false);
 				router.push("/signin");
 			} catch (error) {
-				console.log(error.response);
+				state.error = true;
+				if (error.response.data.message.includes("email")) {
+					state.errMessage.email = "Email already taken";
+				}
+				if (error.response.data.message.includes("phoneNumber")) {
+					state.errMessage.phoneNumber = "Phone Number already taken";
+				}
 				commit("setLoading", false);
+				setTimeout(() => {
+					state.error = false;
+				}, 5000);
 			}
 		},
 		getUser: async ({ commit, state }) => {
@@ -147,6 +166,7 @@ export default new Vuex.Store({
 				// commit("setUser", { user });
 				// });
 			} catch (error) {
+				router.replace("/error");
 				console.log(error.response);
 			}
 		},
@@ -182,13 +202,21 @@ export default new Vuex.Store({
 				}
 			}
 		},
-		sendVertificationMail: async ({ state }) => {
+		sendVertificationMail: async ({ commit, state }) => {
 			try {
+				state.loading = true;
 				await userInstance.get("/verify-email", {
 					headers: { Authorization: `Bearer ${state.token}` }
 				});
+				state.loading = false;
 			} catch (error) {
+				state.loading = false;
+				commit("setError", true);
+				state.errMessage.verifyError = "There was an error sending mail";
 				console.log(error.response);
+				setTimeout(() => {
+					commit("setError", false);
+				}, 5000);
 			}
 		},
 		fetchArticles: async ({ commit }) => {
@@ -219,6 +247,7 @@ export default new Vuex.Store({
 		},
 		updateUser: async ({ commit, state }, payload) => {
 			try {
+				state.loading = true;
 				const response = await userInstance.patch(
 					"/update-my-account-data",
 					payload,
@@ -229,17 +258,22 @@ export default new Vuex.Store({
 				const { user } = response.data.data;
 				localStorage.setItem("user", JSON.stringify(user));
 				commit("updateCurrentUser", user);
+				state.loading = false;
 			} catch (error) {
+				state.loading = false;
 				console.log(error.response);
 			}
 		},
 		updatePassword: async ({ dispatch, state }, payload) => {
 			try {
+				state.loading = true;
 				await userInstance.patch("/update-my-account-password", payload, {
 					headers: { Authorization: `Bearer ${state.token}` }
 				});
 				dispatch("signout");
+				state.loading = false;
 			} catch (error) {
+				state.loading = false;
 				console.log(error.response);
 			}
 		},
@@ -255,17 +289,21 @@ export default new Vuex.Store({
 		},
 		submitNewArticle: async ({ commit, state }, payload) => {
 			try {
+				state.loading = true;
 				const response = await articleInstance.post("/", payload, {
 					headers: { Authorization: `Bearer ${state.token}` }
 				});
 				commit("addNewArticle", response.data.data.article);
 				router.push("/dashboard");
+				state.loading = false;
 			} catch (error) {
+				state.loading = false;
 				console.log(error.message);
 			}
 		},
 		updateArticle: async ({ commit, state }, payload) => {
 			try {
+				state.loading = true;
 				const response = await articleInstance.patch(
 					`/${payload.id}`,
 					payload.newArticle,
@@ -276,28 +314,36 @@ export default new Vuex.Store({
 					}
 				);
 				commit("updateSelectedArticle", response.data.data.article);
+				state.loading = false;
 				router.push("/dashboard");
 			} catch (error) {
+				state.loading = false;
 				console.log(error.message);
 			}
 		},
 		deleteArticle: async ({ commit, state }, payload) => {
 			try {
+				state.loading = true;
 				await articleInstance.delete(`/${payload}`, {
 					headers: { Authorization: `Bearer ${state.token}` }
 				});
 				commit("deleteSelectedArticle", payload);
+				state.loading = false;
 			} catch (error) {
+				state.loading = false;
 				console.log(error);
 			}
 		},
 		deactivateAccount: async ({ dispatch, state }) => {
 			try {
+				state.loading = true;
 				await userInstance.delete("/deactivate-me", {
 					headers: { Authorization: `Bearer ${state.token}` }
 				});
+				state.loading = false;
 				dispatch("signout");
 			} catch (error) {
+				state.loading = false;
 				console.log(error);
 			}
 		},
@@ -308,6 +354,8 @@ export default new Vuex.Store({
 				state.loading = false;
 				router.push("/signin");
 			} catch (error) {
+				state.loading = false;
+				router.replace("/error");
 				console.log(error);
 			}
 		},
@@ -345,6 +393,7 @@ export default new Vuex.Store({
 				router.push("/signin");
 			} catch (error) {
 				state.loading = false;
+				router.replace("/error");
 				console.log(error);
 			}
 		},
@@ -393,5 +442,9 @@ export default new Vuex.Store({
 			}
 		}
 	},
-	getters: {}
+	getters: {
+		getErrorState: state => {
+			return state.error;
+		}
+	}
 });

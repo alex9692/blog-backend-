@@ -32,7 +32,12 @@
 					></b-form-input>
 				</b-form-group>
 				<div class="text-center">
-					<b-button type="submit" variant="success" style="width: 60%;" :disabled="!allowSubmit">Submit</b-button>
+					<b-button type="submit" variant="success" style="width: 60%;" :disabled="!allowSubmit">
+						<span v-if="!loading">Submit</span>
+						<span v-else>
+							<b-spinner small label="Small Spinner" variant="light" class="mr-1"></b-spinner>Submitting...
+						</span>
+					</b-button>
 				</div>
 			</b-form>
 		</b-col>
@@ -40,6 +45,7 @@
 </template>
 
 <script>
+	import { mapState } from "vuex";
 	export default {
 		data() {
 			return {
@@ -49,6 +55,7 @@
 			};
 		},
 		computed: {
+			...mapState(["loading"]),
 			allowSubmit() {
 				return (
 					this.currentPassword &&
@@ -66,6 +73,9 @@
 					newPassword: this.newPassword,
 					confirmNewPassword: this.confirmPassword
 				});
+				this.currentPassword = "";
+				this.newPassword = "";
+				this.confirmPassword = "";
 			}
 		}
 	};

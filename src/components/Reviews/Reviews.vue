@@ -15,8 +15,8 @@
 					<div class="d-flex w-100 justify-content-between mt-4">
 						<b-card-text>Ratings: {{review.ratings}}</b-card-text>
 						<b-card-text>
-							Created At: {{new Date(review.createdAt).toLocaleDateString()}}
-							<small>{{new Date(review.createdAt).toLocaleTimeString()}}</small>
+							Posted At: {{new Date(review.updatedAt).toLocaleDateString()}}
+							<small>{{new Date(review.updatedAt).toLocaleTimeString()}}</small>
 						</b-card-text>
 					</div>
 				</b-card>

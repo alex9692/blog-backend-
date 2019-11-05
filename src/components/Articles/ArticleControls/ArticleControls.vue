@@ -47,7 +47,7 @@
 
 <style scoped>
 	.scroll-area {
-		height: 55vh;
+		height: 50vh;
 		width:60vw;
 		position: absolute;
 	}

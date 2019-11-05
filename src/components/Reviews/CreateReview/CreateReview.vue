@@ -53,7 +53,7 @@
 			ratings(val, old) {
 				for (let c = 1; c <= old; c++) {
 					const el = document.querySelector(`.star-icon-${c}`);
-					el.style.fill = "#fff";
+					el.style.fill = "#abb6bdd5";
 				}
 				for (let c = 1; c <= val; c++) {
 					const el = document.querySelector(`.star-icon-${c}`);

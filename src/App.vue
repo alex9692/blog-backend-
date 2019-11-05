@@ -10,6 +10,8 @@
 <script>
 	import Header from "./components/Header/Header";
 	import Footer from "./components/Footer/Footer";
+	import { mapState } from "vuex";
+
 	export default {
 		name: "app",
 		components: {
@@ -32,8 +34,23 @@
 						to: "/articles/:id",
 						active: true
 					}
-				]
+				],
+				showError: true
 			};
+		},
+		computed: {
+			...mapState(["errMessage", "error"])
+		},
+		watch: {
+			error: function(val) {
+				if (val) {
+					Object.keys(this.errMessage).forEach(key => {
+						this.$bvToast.toast(this.errMessage[key], {
+							title: "Error"
+						});
+					});
+				}
+			}
 		}
 	};
 </script>

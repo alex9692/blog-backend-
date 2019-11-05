@@ -5,13 +5,21 @@
 				<b-card class="card-custom">
 					<div class="d-flex w-100 justify-content-between">
 						<b-card-text>{{article.title}}</b-card-text>
-						<div>
-							<span @click="updateArticle(article._id)">
-								<v-icon name="edit-3" class="edit-icon mr-4"></v-icon>
-							</span>
-							<span @click="deleteArticle(article._id)">
-								<v-icon name="x-circle" class="delete-icon"></v-icon>
-							</span>
+						<div v-if="user.role !=='guest'">
+							<div v-if="!loading">
+								<span @click="updateArticle(article._id)">
+									<v-icon name="edit-3" class="edit-icon mr-4"></v-icon>
+								</span>
+								<span @click="deleteArticle(article._id)">
+									<v-icon name="x-circle" class="delete-icon"></v-icon>
+								</span>
+							</div>
+							<div v-else>
+								<b-spinner small label="Small Spinner" variant="dark" class="mr-1"></b-spinner>
+							</div>
+						</div>
+						<div v-else>
+							<small>You need to be verified to update or delete your articles.</small>
 						</div>
 					</div>
 					<div class="d-flex w-100 justify-content-between">
@@ -21,7 +29,7 @@
 								<v-icon name="star" class="star-icon"></v-icon>
 							</span>
 						</p>
-						<small>Created At: {{article.createdAt}}</small>
+						<small>Created At: {{new Date(article.createdAt).toLocaleDateString()}}</small>
 					</div>
 				</b-card>
 			</b-col>
@@ -33,7 +41,11 @@
 	import { mapState } from "vuex";
 	export default {
 		computed: {
-			...mapState({ articles: "myArticles" })
+			...mapState({
+				articles: "myArticles",
+				loading: "loading",
+				user: "user"
+			})
 		},
 		methods: {
 			updateArticle(id) {

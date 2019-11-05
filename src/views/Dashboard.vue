@@ -1,15 +1,23 @@
 <template>
-	<div class="mt-3">
-		<h1>Dashboard!</h1>
+	<div class="mt-2">
+		<h1>Dashboard:</h1>
 		<hr />
 		<div class="text-center">
 			<div v-if="user && user.role ==='guest'">
 				<p
+					v-if="!mailSent"
 					class="text-danger mb-3"
 				>It seems your account is not verified.Click the button down below to verify your account and enjoy full feature.</p>
-				<b-button @click="sendMail">Verify Account</b-button>
+				<b-button @click="sendMail" v-if="!mailSent">
+					<span v-if="loading">Sending Verification Email</span>
+					<span v-if="!loading">Verify Account</span>
+				</b-button>
 			</div>
 			<div v-else>You account is verified.You can now enjoy full features of this app.</div>
+			<p
+				v-if="mailSent && !error"
+				class="text-success"
+			>Mail containting a link to verify your account has been sent to your email address.</p>
 		</div>
 		<b-card class="mt-5" no-body>
 			<b-card-header header-tag="nav">
@@ -22,10 +30,6 @@
 						@click="selectedComponent='app-article-controls'"
 						:active="selectedComponent==='app-article-controls'"
 					>My Articles</b-nav-item>
-					<b-nav-item
-						@click="selectedComponent='app-review-controls'"
-						:active="selectedComponent==='app-review-controls'"
-					>My Reviews</b-nav-item>
 				</b-nav>
 			</b-card-header>
 		</b-card>
@@ -44,7 +48,6 @@
 	import { mapState } from "vuex";
 	import UserControls from "../components/User/UserControls/UserControls";
 	import ArticleControls from "../components/Articles/ArticleControls/ArticleControls";
-	import MyReviews from "../components/Reviews/ReviewsControls/ReviewControls";
 
 	export default {
 		beforeRouteEnter(to, from, next) {
@@ -55,21 +58,26 @@
 		data() {
 			return {
 				prevPath: "",
-				selectedComponent: "app-user-controls"
+				selectedComponent: "app-user-controls",
+				mailSent: false
 			};
 		},
 		components: {
 			"app-user-controls": UserControls,
-			"app-article-controls": ArticleControls,
-			"app-review-controls": MyReviews
+			"app-article-controls": ArticleControls
 		},
 		methods: {
-			sendMail() {
-				this.$store.dispatch("sendVertificationMail");
+			async sendMail() {
+				await this.$store.dispatch("sendVertificationMail");
+
+				this.mailSent = true;
+				if (this.errMessage.verifyError) {
+					this.mailSent = false;
+				}
 			}
 		},
 		computed: {
-			...mapState(["user", "myArticles"]),
+			...mapState(["user", "myArticles", "loading", "error", "errMessage"]),
 			setProps() {
 				if (this.selectedComponent === "app-user-controls") {
 					return this.user;
@@ -100,7 +108,7 @@
 		color: #007bff;
 	}
 	.card-header {
-		background: #a7b0b9;
+		background: #dae2e6;
 		border: none;
 	}
 </style>

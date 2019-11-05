@@ -3,7 +3,10 @@
 		<b-row v-for="article in articles" :key="article._id" class="mb-3">
 			<b-col cols="10" offset-md="1">
 				<b-card @click="showArticle(article.slug, article._id)" class="card-custom">
-					<b-card-text>{{article.title}}</b-card-text>
+					<div class="d-flex w-100 justify-content-between">
+						<b-card-text>{{article.title}}</b-card-text>
+						<small>Click to view</small>
+					</div>
 					<div class="d-flex w-100 justify-content-between">
 						<p class="mb-1">
 							Ratings:
@@ -11,7 +14,7 @@
 								<v-icon name="star" class="star-icon"></v-icon>
 							</span>
 						</p>
-						<small>Created At: {{article.createdAt}}</small>
+						<small>Created At: {{new Date(article.createdAt).toLocaleDateString()}}</small>
 					</div>
 				</b-card>
 			</b-col>
